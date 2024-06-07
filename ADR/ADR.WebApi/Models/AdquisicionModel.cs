@@ -13,6 +13,7 @@ namespace ADR.WebApi.Models
         public DateTime FechaAdquisicion { get; set; }                        
         public string Proveedor { get; set; }
         public string Documentacion { get; set; }
+        public bool Estado { get; set; }
 
         [Key]
         public int AdquisicionId { get; set; }

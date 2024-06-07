@@ -16,7 +16,10 @@
 else
 {
      <div class="container">
-         
+        <button type="button" @onclick="(()=> Crear())" class="btn btn-success">
+            <span class="oi oi-plus" aria-hidden="true"></span>
+        </button>
+
          <br />
          <br />
 
@@ -50,7 +53,15 @@ else
                             </Template>
                         </RadzenDataGridColumn>
                         <RadzenDataGridColumn TItem="AdquisicionModel" Property="Proveedor" Title="Proveedor" />
-                        <RadzenDataGridColumn TItem="AdquisicionModel" Property="Documentacion" Title="Documentacion" />                        
+                        <RadzenDataGridColumn TItem="AdquisicionModel" Property="Documentacion" Title="Documentacion" />
+
+                        <RadzenDataGridColumn TItem="AdquisicionModel" Property="AdquisicionId" Title="Acciones">
+                            <Template Context="data">
+                                <button type="button" @onclick="(()=>Modificar(data.AdquisicionId))" class="btn btn-info">
+                                    <span class="oi oi-pencil" aria-hidden="true"></span>
+                                </button>
+                            </Template>
+                        </RadzenDataGridColumn>
                     </Columns>
                 </RadzenDataGrid>
             </div>
@@ -85,4 +96,17 @@ else
         Task.Run(() => Consultar());
     }
 
+    private async Task Crear()
+    {
+        await DialogService.OpenAsync<AdquisicionCrear>($"Crear Adquisicion",
+            new Dictionary<string, object>() { },
+            new DialogOptions() { Width = "700px", Height = "570px", Resizable = true });
+    }
+
+    private async Task Modificar(int id)
+    {
+        await DialogService.OpenAsync<AdquisicionModificar>($"Actualizar Adquisicion",
+           new Dictionary<string, object>() { { "Id", id } },
+           new DialogOptions() { Width = "700px", Height = "570px", Resizable = true });
+    }
 }

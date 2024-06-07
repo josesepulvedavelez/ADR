@@ -1,0 +1,138 @@
+﻿@page "/AdquisicionModificar/{id:int}"
+
+<RadzenNotification />
+
+@if (_adquisicionModel == null)
+{
+    <div class="d-flex justify-content-center">
+        <RadzenProgressBarCircular ShowValue="true" Mode="ProgressBarMode.Indeterminate" Size="ProgressBarCircularSize.Large">
+            <Template>Wait</Template>
+        </RadzenProgressBarCircular>
+    </div>
+}
+else
+{
+    <EditForm Model="@_adquisicionModel" OnValidSubmit="@Modificar">
+        <DataAnnotationsValidator />
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label>Unidad</label>
+                    <RadzenTextBox @bind-Value="@_adquisicionModel.Unidad" class="w-100" />
+                    <ValidationMessage For="@(() => _adquisicionModel.Unidad)" />
+                </div>
+                <div class="form-group">
+                    <label>TipoBien</label>
+                    <RadzenTextBox @bind-Value="@_adquisicionModel.TipoBien" class="w-100" />
+                    <ValidationMessage For="@(() => _adquisicionModel.TipoBien)" />
+                </div>
+                <div class="form-group">
+                    <label>Cantidad</label>
+                    <RadzenNumeric @bind-Value="@_adquisicionModel.Cantidad" class="w-100" />
+                    <ValidationMessage For="@(() => _adquisicionModel.Cantidad)" />
+                </div>
+                <div class="form-group">
+                    <label>ValorUnitario</label>
+                    <RadzenNumeric @bind-Value="@_adquisicionModel.ValorUnitario" Format="\$0.00" class="w-100" />
+                    <ValidationMessage For="@(() => _adquisicionModel.ValorUnitario)" />
+                </div>
+                <div class="form-group">
+                    <label>ValorTotal</label>
+                    <RadzenNumeric @bind-Value="@_adquisicionModel.ValorTotal" Format="\$0.00" class="w-100" />
+                    <ValidationMessage For="@(() => _adquisicionModel.ValorTotal)" />
+                </div>
+                <div class="form-group">
+                    <label>Fecha</label>
+                    <RadzenDatePicker @bind-Value="_adquisicionModel.FechaAdquisicion" Format="yyyy/MM/dd" class="w-100" />
+                    <ValidationMessage For="@(() => _adquisicionModel.FechaAdquisicion)" />
+                </div>
+                <div class="form-group">
+                    <label>Proveedor</label>
+                    <RadzenTextBox @bind-Value="@_adquisicionModel.Proveedor" class="w-100" />
+                    <ValidationMessage For="@(() => _adquisicionModel.Proveedor)" />
+                </div>
+                <div class="form-group">
+                    <label>Documentacion</label>
+                    <RadzenTextBox @bind-Value="@_adquisicionModel.Documentacion" class="w-100" />
+                    <ValidationMessage For="@(() => _adquisicionModel.Documentacion)" />
+                </div>
+                <div class="form-group">
+                    <label>Estado</label>
+                    <RadzenSwitch @bind-Value="_adquisicionModel.Estado" />
+                    <ValidationMessage For="@(() => _adquisicionModel.Estado)" />
+                </div>
+            </div>
+        </div>
+
+        <br />
+
+        <div class="col-md-12">
+            <center>
+                <button type="submit" class="btn btn-success">
+                    <span class="oi oi-plus" aria-hidden="true">Modificar</span>
+                </button>
+            </center>
+        </div>
+    </EditForm>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    AdquisicionModel _adquisicionModel = new();
+    List<AdquisicionModel> _lstAdquisicionModel = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Consultar();
+    }
+
+    private async Task Consultar()
+    {
+        var adquisicion = await _http.GetFromJsonAsync<AdquisicionModel>($"/Api/Adquisiciones/Consultar/{Id}");
+
+        if (adquisicion != null)
+        {
+            _adquisicionModel = adquisicion;
+        }
+    }
+
+    private async Task Modificar()
+    {
+        var confirmar = await DialogService.Confirm("¿Esta seguro de guardar esta información?", "Confirmar");
+
+        if (confirmar == true)
+        {
+            var json = JsonConvert.SerializeObject(_adquisicionModel);
+            var stringContent = new StringContent(json, UnicodeEncoding.UTF8, "application/json");
+            var httpResponse = await _http.PutAsync($"/Api/Adquisiciones/Modificar/{Id}", stringContent);
+
+            if (httpResponse.IsSuccessStatusCode)
+            {
+                ShowNotification(new NotificationMessage
+                    {
+                        Severity = NotificationSeverity.Success,
+                        Summary = "Modificar Adquisicion",
+                        Detail = "Adquisicion guardada exitosamente.",
+                        Duration = 5000
+                    });
+                DialogService.Close(true);
+            }
+            else
+            {
+                ShowNotification(new NotificationMessage
+                    {
+                        Severity = NotificationSeverity.Warning,
+                        Summary = "Modificar Adquisicion",
+                        Detail = "Adquisicion no guardada exitosamente.",
+                        Duration = 5000
+                    });
+            }
+        }
+    }
+
+    void ShowNotification(NotificationMessage message)
+    {
+        NotificationService.Notify(message);
+    }
+}

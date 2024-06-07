@@ -83,7 +83,7 @@ namespace ADR.WebApi.Controllers
                 existeAdquisicion.FechaAdquisicion = adquisicionModel.FechaAdquisicion;
                 existeAdquisicion.Proveedor = adquisicionModel.Proveedor;
                 existeAdquisicion.Documentacion = adquisicionModel.Documentacion;
-
+                existeAdquisicion.Estado = adquisicionModel.Estado;
                 await _adquisicionContext.SaveChangesAsync();
 
                 return Ok(id);
