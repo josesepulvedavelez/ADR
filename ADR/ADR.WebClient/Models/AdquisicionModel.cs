@@ -4,7 +4,7 @@ namespace ADR.WebClient.Models
 {
     public class AdquisicionModel
     {
-        public decimal Presupuesto { get; }
+        public decimal Presupuesto { get; set; }
         public string Unidad { get; set; }
         public string TipoBien { get; set; }
         public int Cantidad { get; set; }
