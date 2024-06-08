@@ -13,7 +13,8 @@ CREATE TABLE Adquisicion
 	FechaAdquisicion DATE NOT NULL,
 	Proveedor VARCHAR(200) NOT NULL,
 	Documentacion VARCHAR(150) NOT NULL,
-	AdquisicionId INT IDENTITY(1, 1) PRIMARY KEY
+	AdquisicionId INT IDENTITY(1, 1) PRIMARY KEY,
+	Estado BIT
 );
 
 SELECT * FROM Adquisicion;

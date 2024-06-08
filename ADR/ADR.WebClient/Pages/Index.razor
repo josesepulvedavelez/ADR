@@ -54,7 +54,20 @@ else
                         </RadzenDataGridColumn>
                         <RadzenDataGridColumn TItem="AdquisicionModel" Property="Proveedor" Title="Proveedor" />
                         <RadzenDataGridColumn TItem="AdquisicionModel" Property="Documentacion" Title="Documentacion" />
+                        <RadzenDataGridColumn TItem="AdquisicionModel" Property="Estado" Title="Estado">
+                            <Template Context="data">
+                                @*<RadzenSwitch @bind-Value="data.Estado" />*@
+                                @if (data.Estado == false)
+                                {
+                                    <span class="badge bg-light text-dark">Inactivo</span>
+                                }
+                                else if (data.Estado == true)
+                                {
+                                    <span class="badge bg-success">Activo</span>
+                                }
+                            </Template>
 
+                        </RadzenDataGridColumn>
                         <RadzenDataGridColumn TItem="AdquisicionModel" Property="AdquisicionId" Title="Acciones">
                             <Template Context="data">
                                 <button type="button" @onclick="(()=>Modificar(data.AdquisicionId))" class="btn btn-info">
