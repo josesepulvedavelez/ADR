@@ -94,5 +94,21 @@ namespace ADR.WebApi.Controllers
             }
         }
 
+        [HttpGet("Filtrar/{fechaInicial}/{fechaFinal}")]
+        public async Task<ActionResult> Filtrar(DateTime fechaInicial, DateTime fechaFinal)
+        {
+            try
+            {
+                var adquisiciones = await _adquisicionContext.Adquisicion
+                                            .Where(x => x.FechaAdquisicion >= fechaInicial && x.FechaAdquisicion <= fechaFinal)
+                                            .ToListAsync();
+                return Ok(adquisiciones);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno al actualizar el cliente: {ex.Message}");
+            }
+        }
+
     }
 }

@@ -1,0 +1,115 @@
+﻿@page "/AdquisicionFiltrar"
+
+<h3 style="text-align: center;">Filtrar Adquisiciones</h3>
+
+<RadzenDialog />
+<RadzenNotification />
+
+<div class="container">
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label>Fecha</label>
+                <RadzenDatePicker @bind-Value="fechaInicial" class="w-100" />
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label>Fecha</label>
+                <RadzenDatePicker @bind-Value="fechaFinal" class="w-100" />
+            </div>
+        </div>
+    </div>
+
+    <br />
+
+    <div class="col-md-12">
+        <center>
+            <button class="btn btn-primary" @onclick="Filtrar">Filtrar</button>
+        </center>
+    </div>
+
+    <br />
+
+    <div class="row">
+        <div class="col-sm-12 text-left">
+            <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" PageSize="10" AllowPaging="true" FilterMode="FilterMode.Advanced" AllowSorting="true"
+                            Data="_lstAdquisicionModel" TItem="AdquisicionModel" ColumnWidth="150px"
+                            LogicalFilterOperator="LogicalFilterOperator.Or" EmptyText="No se encontraron registros.">
+                <Columns>
+                    <RadzenDataGridColumn TItem="AdquisicionModel" Property="Presupuesto" Title="Presupuesto">
+                        <Template Context="data">
+                            $@string.Format("{0:N2}", data.Presupuesto)
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="AdquisicionModel" Property="Unidad" Title="Unidad" />
+                    <RadzenDataGridColumn TItem="AdquisicionModel" Property="TipoBien" Title="TipoBien" />
+                    <RadzenDataGridColumn TItem="AdquisicionModel" Property="Cantidad" Title="Cantidad" />
+                    <RadzenDataGridColumn TItem="AdquisicionModel" Property="ValorUnitario" Title="ValorUnitario">
+                        <Template Context="data">
+                            $@string.Format("{0:N2}", data.ValorUnitario)
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="AdquisicionModel" Property="ValorTotal" Title="ValorTotal">
+                        <Template Context="data">
+                            $@string.Format("{0:N2}", data.ValorTotal)
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="AdquisicionModel" Property="FechaAdquisicion" Title="FechaAdquisicion">
+                        <Template Context="adquisicionModel">
+                            @string.Format("{0:dd/MM/yyyy}", adquisicionModel.FechaAdquisicion)
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="AdquisicionModel" Property="Proveedor" Title="Proveedor" />
+                    <RadzenDataGridColumn TItem="AdquisicionModel" Property="Documentacion" Title="Documentacion" />
+                </Columns>
+            </RadzenDataGrid>
+        </div>
+    </div>
+
+</div>
+
+@code {
+    List<AdquisicionModel> _lstAdquisicionModel;
+    DateTime fechaInicial;
+    DateTime fechaFinal;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+    }
+
+    public async Task Filtrar()
+    {
+        string fechaInicialString = fechaInicial.ToString("yyyy-MM-dd");
+        string fechaFinalString = fechaFinal.ToString("yyyy-MM-dd");
+
+        if (fechaInicial.ToString() != string.Empty && fechaFinal.ToString() != string.Empty)
+        {
+            var response = await _http.GetFromJsonAsync<List<AdquisicionModel>>($"Api/Adquisiciones/Filtrar/{fechaInicialString}/{fechaFinalString}");
+
+            if (response != null)
+            {
+                _lstAdquisicionModel = response;
+            }
+        }
+        else
+        {
+            ShowNotification(new NotificationMessage
+                {
+                    Severity = NotificationSeverity.Warning,
+                    Summary = "Crear Adquisicion",
+                    Detail = "Debe seleccionar fecha inicial y fecha final correctamente",
+                    Duration = 5000
+                });
+        }
+
+        StateHasChanged();
+    }
+
+    void ShowNotification(NotificationMessage message)
+    {
+        NotificationService.Notify(message);
+    }
+}
